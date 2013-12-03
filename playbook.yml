@@ -1,0 +1,65 @@
+---
+- hosts: all
+  vars:
+    applications:
+      - google-chrome
+      - sublime-text
+      - pgadmin3
+      - iterm2
+      - vlc
+      - caffeine
+      - carbon-copy-cloner
+      - keepassx
+      - vmware-fusion
+      - dropbox
+      - moom
+      - skype
+      - spotify
+      - xquartz
+      - evernote
+      - gimp
+      - 
+
+  tasks:
+    - name: Tap those sweet homebrews
+      command: brew tap {{ item }}
+      with_items:
+        - phusion/passenger
+        - phinze/homebrew-cask
+        - homebrew/apache
+        - homebrew/dupes
+        - homebrew/versions
+        - petere/postgresql
+
+    - name: Install homebrew libraries
+      homebrew: name={{ item }} state=present
+      with_items:
+        - brew-cask
+        - wget
+        - apple-gcc42
+        - vim
+        - ack
+        - rvm
+        - arp-scan
+        - passenger
+        - tig
+        - redis
+        - postgresql-8.4
+        - postgresql-9.2
+        - postgresql-9.3
+        - --HEAD postgresql-common
+
+    - name: Check for installed apps(casks)
+      shell: brew cask list | grep {{ item }}
+      register: installed_applications
+      with_items: applications
+      ignore_errors: true
+                             
+    - name: Install apps with brew-cask
+      shell: brew cask install {{ item }}
+      with_items: applications
+      when: "{{ item not in installed_applications.results|map(attribute='stdout') }}"
+
+    - name: Clone dotfiles
+      git: repo=git@github.com:an0nym0use/dotfiles.git dest={{ home }}/.dotfiles
+
