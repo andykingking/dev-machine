@@ -18,7 +18,10 @@
       - xquartz
       - evernote
       - gimp
-      - 
+      - tunnelblick
+      - alfred
+      - flint
+      - firefox
 
   tasks:
     - name: Tap those sweet homebrews
